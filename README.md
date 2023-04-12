@@ -4,7 +4,7 @@
 #### 제작 기간: 2021.11.09~2021.01.25
 #### 설명
 - 마우스 휠로 카메라 확대 및 축소가 가능하다.(MouseControl에 구현)
-  - 마우스 휠 조작 시 마우스가 매뉴텝에 있다면 줌을 안하고 매뉴탭을 스크롤링 한다.
+  - 마우스 휠 조작 시 마우스가 매뉴에 있다면 줌을 안하고 매뉴탭을 스크롤링 한다.
 ```C#
 // CamMove
 public void zoomIn() { cam.orthographicSize = Mathf.Max(maxZoom, cam.orthographicSize - zSpeed);limitCamBound(); }
@@ -57,12 +57,16 @@ else
         }
     }
  ```
+ - 매뉴탭에서 소자를 클릭 시 해당 소자의 알파값이 올라간다.
  - 마우스 좌클릭으로 소자를 배치할 수 있다.(MouseControl-> drawWire(),dragComponents())
    - 기존 배치된 소자 좌클릭 시 새로운 소자를 배치하지 않고 클릭 소자를 포커스하고 포커스중인 소자는 드래그로 위치 이동이 가능하다.
      - 드래그된 위치에 다른 소자가 있다면 포커스된 소자를 삭제한다.
    - 포커스된 소자에 대한 정보는 하단 정보탭에 출력되고 수정 가능하다.
    - 소자 배치 중 다른 소자와 위치가 중복될 경우 소자를 배치하지 않는다.
-   - 전선 포커스 시 전선의 형태변형이 가능하다.
+   - 전선 포커스 시 전선의 형태변형 및 색 변환이 가능하다.
+   
+   <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427144-28592e84-47df-49f3-a3e2-e652cf9f1471.png"/>
+   
      - 전선형태 변형 시 그 크기에 맞는 콜라이더가 생성된다.
      ```C#
          void getColPoint(Vector2 v1)// v1은 전선(직선)의 법선벡터
@@ -92,6 +96,12 @@ else
     }
  ```
  - 소자 배치 화면은 격자무늬로 되어있으며 이는 쉐이더로 구현하였다.
+ 
+ <p>
+ <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427135-b00756d2-dcd0-4bc0-ae32-168686f6349c.png"/>
+ <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427153-ec56444f-f567-45d6-af05-89171f393397.png"/>
+ </p>
+ 
  - 모든 소자는 격자무늬 교차점에 마그네틱 효과를 받는다.(격자무늬 간격은 1이다.)
  ```C#
      bool magnetic(float min, float max, Vector2 gap)// min(0~1f)-> 범위 하한선 max(0~1f)-> 범위 상한선 gap-> 보정치(마우스 클릭 위치와 소자 위치간 차)
@@ -167,6 +177,9 @@ else
      - dt는 설정된 프레임 당 시간이다.(기본값 0.01초)
    - iL= integral(v)*(dt/L)
      - integral(v)는 전압의 누적량이다.
+     
+ <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427151-c15121d1-94bd-4469-9927-af2ffd231b39.png"/>
+ 
      ```C#
      CM.loops[i].components[j].GetComponent<Resistor>().intergral += term * CM.loops[i].components[j].GetComponent<Resistor>().voltage;// 각 프레임마다 
      ```
@@ -174,8 +187,17 @@ else
      - 단락 처리 시 인덕터의 양 연결점에 있는 소자들을 서로 연결한다.
      - 개방처리 시 커패시터의 양 연결점에 있는 소자들의 해당 연결점 정보를 지운다.
      - 위 처리들은 스위치소자의 on/off에도 동일하게 적용된다.
+   - 교류와 직류 전압원 처리는 다음과 같다.
+   ```C#
+    public float getVoltage(float time=0) 
+    {
+        if (type == 0) { return voltage; }// 직류
+        else { return voltage * Mathf.Sin((2 * Mathf.PI * frequency * time) + (phase * Mathf.Deg2Rad)); }// 교류                                                                                                                                                                                                                      ,.0
+    }
+   ```
  - 회로 해석 중 접지가 없다면 노드 중 가장 연결된 소자들이 많은 노드가 접지처리 된다.(CircuitAnalyzer.setGround())
    - 접지처리된 노드는 값이 0이므로 방정식에서 제거된다.(CircuitAnalyzer.applyGround())
+ - 회로가 개방되었다면 전류가 흐르지 않는다.
  - 교류전원은 주파수와 위상을 설정할 수 있다.
    - 주파수 변화 시 오실로스코프 분석을 위해 시간이 스케일링된다.(CircuitAnalyzer.setTerm())
    ```C#
