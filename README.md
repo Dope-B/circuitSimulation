@@ -2,9 +2,15 @@
 
 #### 사용 기술: Unity(2020.3.32f1)
 #### 제작 기간: 2021.11.09~2021.01.25
+
 #### 설명
+
+<img width="50%" src="https://user-images.githubusercontent.com/33209821/231475673-4e7def5b-a174-4f58-9fad-ca7daec920a8.gif"/>
+
 - 마우스 휠로 카메라 확대 및 축소가 가능하다.(MouseControl에 구현)
   - 마우스 휠 조작 시 마우스가 매뉴에 있다면 줌을 안하고 매뉴탭을 스크롤링 한다.
+  <img width="50%" src="https://user-images.githubusercontent.com/33209821/231475655-7ecd7271-43d2-4b40-bc17-a731f4ce30f0.gif"/>
+
 ```C#
 // CamMove
 public void zoomIn() { cam.orthographicSize = Mathf.Max(maxZoom, cam.orthographicSize - zSpeed);limitCamBound(); }
@@ -63,9 +69,14 @@ else
      - 드래그된 위치에 다른 소자가 있다면 포커스된 소자를 삭제한다.
    - 포커스된 소자에 대한 정보는 하단 정보탭에 출력되고 수정 가능하다.
    - 소자 배치 중 다른 소자와 위치가 중복될 경우 소자를 배치하지 않는다.
+   - <img width="50%" src="https://user-images.githubusercontent.com/33209821/231475661-aa12d630-242d-4172-b034-c492825b89ae.gif"/>
+
    - 전선 포커스 시 전선의 형태변형 및 색 변환이 가능하다.
-   
-   <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427144-28592e84-47df-49f3-a3e2-e652cf9f1471.png"/>
+
+   <p>
+   <img width="50%" src="https://user-images.githubusercontent.com/33209821/231475658-cab9a0f8-2a59-463b-a4ed-682b3a442e25.gif"/>
+   <img width="50%" src="https://user-images.githubusercontent.com/33209821/231427144-28592e84-47df-49f3-a3e2-e652cf9f1471.png"/>
+   </p>
    
      - 전선형태 변형 시 그 크기에 맞는 콜라이더가 생성된다.
      ```C#
@@ -123,6 +134,9 @@ else
    - 전선의 경우 드래그중인 점을 삭제하고 점의 갯수가 2개 미만이라면 전선을 삭제한다.
  - 키보드 입력으로도 소자배치가 가능하고 정보탭도 열 수 있다.(KeyControl 구현)
  - 정보탭에서 소자를 90도 단위로 회전시킬 수 있다.
+ 
+   <img width="50%" src="https://user-images.githubusercontent.com/33209821/231475680-31bf1516-c272-465a-a8e4-6c26d411a876.gif"/>
+   
    - 소자 회전 중 다른 소자와 위치가 겹치게 된다면 다시 회전한다.
  - 모든 소자는 Components를 상속받고 속성은 다음과 같다.
    - 연결점의 좌표
@@ -178,7 +192,10 @@ else
    - iL= integral(v)*(dt/L)
      - integral(v)는 전압의 누적량이다.
      
+ <p> 
+ <img width="40%" src="https://user-images.githubusercontent.com/33209821/231475685-27249d73-47c9-4fcb-90a1-846f21ccfda2.gif"/>
  <img width="40%" src="https://user-images.githubusercontent.com/33209821/231427151-c15121d1-94bd-4469-9927-af2ffd231b39.png"/>
+ </p>
  
      ```C#
      CM.loops[i].components[j].GetComponent<Resistor>().intergral += term * CM.loops[i].components[j].GetComponent<Resistor>().voltage;// 각 프레임마다 
@@ -187,6 +204,9 @@ else
      - 단락 처리 시 인덕터의 양 연결점에 있는 소자들을 서로 연결한다.
      - 개방처리 시 커패시터의 양 연결점에 있는 소자들의 해당 연결점 정보를 지운다.
      - 위 처리들은 스위치소자의 on/off에도 동일하게 적용된다.
+    
+     <img width="40%" src="https://user-images.githubusercontent.com/33209821/231475637-01990255-c7b5-4feb-af2d-f7781f7cf2f4.gif"/>
+     
    - 교류와 직류 전압원 처리는 다음과 같다.
    ```C#
     public float getVoltage(float time=0) 
@@ -200,6 +220,9 @@ else
  - 회로가 개방되었다면 전류가 흐르지 않는다.
  - 교류전원은 주파수와 위상을 설정할 수 있다.
    - 주파수 변화 시 오실로스코프 분석을 위해 시간이 스케일링된다.(CircuitAnalyzer.setTerm())
+   
+   <img width="50%" src="https://user-images.githubusercontent.com/33209821/231475669-23fb19df-8029-4660-8f31-d266eda14e47.gif"/>
+
    ```C#
     //일부 발췌
     int a = (int)(term / x) / 10;// 주파수가 10의 단위로 변할 시 시간변화량이 줄어듦 
@@ -215,6 +238,12 @@ else
  - 회로 상태를 보여주기 위해 오실로스코프 기능을 지원한다.
    - 전압 또는 전류를 토글 기능으로 확인 가능
    - 스코프의 시간축 변화량 변경 가능
+   
+   <p>
+   <img width="40%" src="https://user-images.githubusercontent.com/33209821/231475691-28f3ee57-570b-48c0-8040-33cbd7b49677.gif"/>
+   <img width="40%" src="https://user-images.githubusercontent.com/33209821/231475665-71fe1639-801a-4a4d-aea7-87ed0d9a49a4.gif"/>
+   </p>
+   
    ```C#
             interval = int.Parse(intervalText.text);// 텍스트필드 입력값을 받음
             line[i].positionCount = interval + 1;// 선의 갯수 설정
